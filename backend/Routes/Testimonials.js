@@ -2,8 +2,7 @@ import express from "express";
 import multer from "multer";
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
-import Menuitem from "../models/Menuitem.js";
-
+import Pics from "../models/Pics.js";
 const router = express.Router();
 
 (async function () {
@@ -21,28 +20,21 @@ const storage = multer.diskStorage({
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     cb(null, uniqueSuffix + file.originalname);
-    console.log("heyyedshghdg");
   },
 });
 
 const upload = multer({ storage: storage });
 
-router.post("/menuitem", upload.single("files"), async (req, res) => {
+router.post("/pics", upload.single("files"), async (req, res) => {
   try {
     const uploadResult = await cloudinary.uploader.upload(req.file.path);
 
-    const newItem = new Menuitem({
+    const newItem = new Pics({
       image: uploadResult.secure_url,
-      name: req.body.name,
-      price: req.body.price,
-      description: req.body.description,
-      veg: req.body.veg,
-      bestsellers: req.body.bestsellers,
-      qunatity: req.body.qunatity,
     });
 
     const savedItem = await newItem.save();
-    console.log(savedItem);
+    
 
     res.status(201).json(savedItem);
 
@@ -63,29 +55,15 @@ router.post("/menuitem", upload.single("files"), async (req, res) => {
     });
   }
 });
-
-router.get("/menuitem", async (req, res) => {
+router.get("/pics", async (req, res) => {
   try {
-    const allMenuItems = await Menuitem.find();
-    res.status(200).json(allMenuItems);
+    const allImages = await Pics.find();
+    res.status(200).json(allImages);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
 
-router.put("/menuitem/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { quantity } = req.body;
-    const menu = await Menuitem.findByIdAndUpdate(
-      id,
-      { quantity },
-      { new: true }
-    );
-    res.status(200).json(menu);
-  } catch (error) {
-    res.status(500).json({ error: "Error updating quantity" });
-  }
-});
+
 
 export default router;

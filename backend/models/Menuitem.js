@@ -28,8 +28,9 @@ const menuSchema = new mongoose.Schema(
         },
         qunatity :{
             type : Number,
-            
-        }  
+            require : true, 
+            default: 10,        
+        }, 
     }
 );
 const Menu = mongoose.model('Menu', menuSchema);

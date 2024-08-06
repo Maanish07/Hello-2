@@ -3,8 +3,7 @@ import User from "../models/User.js";
 import { body, validationResult } from "express-validator";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-
-const jwtSecret = process.env.JWT_SECRET || "hello happy customer";
+import { genrateToken } from "../middleware/Authmiddle.js";
 
 const router = express.Router();
 
@@ -13,39 +12,39 @@ router.post(
   [body("email").isEmail(), body("password").isLength({ min: 5 })],
   async (req, res) => {
     const errors = validationResult(req);
-    
+
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
     let email = req.body.email;
     try {
       let userData = await User.findOne({ email });
-      if (!userData) {
-        return res.status(400).json({ error: "email is not valid" });
-      }
-      const secpass = bcrypt.compare(req.body.password, userData.password);
-      if (! secpass) {
-        return res.status(400).json({ error: "incorrect Password" });
-      } else {
-        console.log("Logine",userData)
-        const user = {
-          name : userData.username,
-          email : userData.email,
-          id : userData.Id
-        }
-        const token = jwt.sign(
-          { user},
-          jwtSecret,
-          {
-            expiresIn: "1h",
-          }
-        );
-        res.cookie("token :",token);
-        
-        console.log("user registered", userData, userData.email);
-        return res.status(200).json({ success: "true" , token : token });
-      }
 
+      if (!userData) {
+        return res.status(400).json({ error: "Email is not valid" });
+      }
+      const secpass = await bcrypt.compare(
+        req.body.password,
+        userData.password
+      );
+
+      if (!secpass) {
+        return res.status(400).json({ error: "Incorrect password" });
+      } else {
+        const user = {
+          name: userData.name,
+          email: userData.email,
+          role: userData.role,
+          id: userData._id,
+        };
+
+        const token = await genrateToken(user);
+        res.cookie("token", token, {
+          httpOnly: true,
+        });
+
+        return res.status(200).json({ success: true, token: token });
+      }
     } catch (error) {
       res.status(400).send(error);
     }
