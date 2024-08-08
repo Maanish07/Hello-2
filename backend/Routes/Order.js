@@ -52,20 +52,6 @@ router.post("/order", async (req, res) => {
       amount,
     } = req.body;
 
-    if (
-      !name ||
-      !phone ||
-      !table ||
-      !cartItems ||
-      !user_Id ||
-      !payment_id ||
-      !order_id ||
-      !signature ||
-      !amount
-    ) {
-      throw new Error("All fields are required");
-    }
-
     const newOrder = new Order({
       name,
       phone,

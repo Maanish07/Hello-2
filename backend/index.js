@@ -12,6 +12,7 @@ import Order from "./Routes/Order.js";
 import Payment from "./Routes/Payment.js";
 import Pics from "./Routes/Testimonials.js";
 import Review from "./Routes/Review.js";
+import Instagram from "./Routes/Instagram.js";
 import "dotenv/config";
 
 const app = express();
@@ -41,6 +42,7 @@ app.use("/", Order);
 app.use("/", Payment);
 app.use("/", Pics);
 app.use("/", Review);
+app.use("/", Instagram);
 
 const port = 4000;
 app.listen(port, () => {

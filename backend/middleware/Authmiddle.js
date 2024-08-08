@@ -5,9 +5,8 @@ dotenv.config();
 const secretKey = process.env.SECRET_KEY;
 
 export const genrateToken = (user) => {
-  console.log(user.username);
   const payLoad = {
-    name: user.username,
+    name: user.name,
     _id: user.id,
     email: user.email,
     role: user.role,
@@ -17,7 +16,6 @@ export const genrateToken = (user) => {
 };
 
 export const genrateRefreshToken = (user) => {
-  ` `;
   const payLoad = {
     username: user.username,
     _id: user._id,

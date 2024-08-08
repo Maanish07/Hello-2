@@ -19,7 +19,7 @@ router.post(
     let email = req.body.email;
     try {
       let userData = await User.findOne({ email });
-
+      console.log("User Data", userData);
       if (!userData) {
         return res.status(400).json({ error: "Email is not valid" });
       }
@@ -30,21 +30,20 @@ router.post(
 
       if (!secpass) {
         return res.status(400).json({ error: "Incorrect password" });
-      } else {
-        const user = {
-          name: userData.name,
-          email: userData.email,
-          role: userData.role,
-          id: userData._id,
-        };
-
-        const token = await genrateToken(user);
-        res.cookie("token", token, {
-          httpOnly: true,
-        });
-
-        return res.status(200).json({ success: true, token: token });
       }
+      const user = {
+        name: userData.name,
+        email: userData.email,
+        role: userData.role,
+        id: userData._id,
+      };
+
+      const token = await genrateToken(user);
+      res.cookie("token", token, {
+        httpOnly: true,
+      });
+
+      return res.status(200).json({ success: true, token: token });
     } catch (error) {
       res.status(400).send(error);
     }
